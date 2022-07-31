@@ -22,7 +22,7 @@ def registrar(request):
     password = form.cleaned_data['password1']
 
     if User.objects.filter(username=username).exists():
-        return JsonResponse({'error': { 'username' :f'User {username} already exists'}})
+        return JsonResponse({'error': {'username': f'User {username} already exists'}})
 
     usuario = User.objects.create_user(username, email=email, password=password)
 
@@ -53,7 +53,7 @@ def login(request):
     if not token:
         return JsonResponse({'error': f'Usuario {username} não possui um token valido'})
 
-    return JsonResponse({'token': f'Token {str(token)}' })
+    return JsonResponse({'token': f'Token {str(token)}'})
 
 
 def only_with_token(request):

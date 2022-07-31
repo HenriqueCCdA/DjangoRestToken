@@ -18,7 +18,3 @@ class RegistroForm(forms.Form):
             )
 
         return password2
-
-class LoginForm(forms.Form):
-    username = forms.CharField(label='User name', max_length=100)
-    password = forms.CharField(max_length=50, widget=forms.PasswordInput)

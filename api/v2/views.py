@@ -24,19 +24,26 @@ def registrar(request):
     password = form.cleaned_data['password1']
 
     if User.objects.filter(username=username).exists():
-        return Response({'error': { 'username' :f'User {username} already exists'}}, status=HTTPStatus.BAD_REQUEST)
+        return Response({'error': {'username': f'User {username} already exists'}}, status=HTTPStatus.BAD_REQUEST)
 
     usuario = User.objects.create_user(username, email=email, password=password)
 
     if usuario:
         Token.objects.create(user=usuario)
 
-    return Response(status=HTTPStatus.NO_CONTENT)
+    data = {
+        'id': usuario.id,
+        'username': usuario.username,
+        'email': usuario.email,
+        'token': usuario.auth_token.key
+    }
+
+    return Response(data, status=HTTPStatus.CREATED)
 
 
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def only_with_token(request):
+def view_protegida(request):
     user = request.user
     return Response({'data': f'Good news, {user} user have a valid token !!'})
