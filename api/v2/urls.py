@@ -8,5 +8,5 @@ app_name = 'v2'
 urlpatterns = [
     path('registrar/', registrar, name='registrar'),
     path('login/', obtain_auth_token, name='api-token-auth'),
-    path('valid_token/', view_protegida, name='valid_token'),
+    path('view_protegida/', view_protegida, name='view_protegida'),
 ]

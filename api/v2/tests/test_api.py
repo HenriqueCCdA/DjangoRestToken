@@ -11,11 +11,11 @@ client = APIClient
 CONTENT_TYPE = 'application/json'
 
 HTTP_METHODS = {
-    'get': client.get,
-    'post': client.post,
-    'put': client.put,
-    'path': client.patch,
-    'delete': client.delete
+    'get': client().get,
+    'post': client().post,
+    'put': client().put,
+    'patch': client().patch,
+    'delete': client().delete
 }
 
 
@@ -72,8 +72,8 @@ def test_register_wrong_password_dont_mach(client, db):
     assert body['error'] == {'password2': ['The two password fields didn’t match.']}
 
 
-@pytest.mark.parametrize("method", ['get', 'put', 'path', 'delete'])
-def test_register_not_allowed_method(client, method, db):
+@pytest.mark.parametrize("method", ['get', 'put', 'patch', 'delete'])
+def test_register_not_allowed_method(method, db):
 
     resp = HTTP_METHODS[method](resolve_url('v2:registrar'), content_type=CONTENT_TYPE)
     assert resp.status_code == HTTPStatus.METHOD_NOT_ALLOWED
@@ -81,7 +81,7 @@ def test_register_not_allowed_method(client, method, db):
 
 def test_view_protegida_without_token(client):
 
-    resp = client.get(resolve_url('v2:valid_token'), content_type=CONTENT_TYPE)
+    resp = client.get(resolve_url('v2:view_protegida'), content_type=CONTENT_TYPE)
 
     assert resp.status_code == HTTPStatus.UNAUTHORIZED
     assert resp['WWW-Authenticate'] == 'Token'
@@ -96,15 +96,24 @@ def test_view_protegida_with_token(client, db):
 
     header = {'HTTP_AUTHORIZATION': f'Token {token}'}
 
-    resp = client.get(resolve_url('v2:valid_token'),
+    resp = client.get(resolve_url('v2:view_protegida'),
                       content_type=CONTENT_TYPE,
                       **header)
 
     assert resp.status_code == HTTPStatus.OK
 
 
-@pytest.mark.parametrize("method", ['post', 'put', 'path', 'delete'])
+@pytest.mark.parametrize("method", ['post', 'put', 'patch', 'delete'])
 def test_view_protegida_not_allowed_method(client, method, db):
 
-    resp = HTTP_METHODS[method](resolve_url('v2:registrar'), content_type=CONTENT_TYPE)
+    user = User.objects.create_user(username='test1',
+                                    email='test1@email.com',
+                                    password='123456!!')
+    token = Token.objects.create(user=user)
+
+    header = {'HTTP_AUTHORIZATION': f'Token {token}'}
+
+    resp = HTTP_METHODS[method](resolve_url('v2:view_protegida'),
+                                content_type=CONTENT_TYPE,
+                                **header)
     assert resp.status_code == HTTPStatus.METHOD_NOT_ALLOWED
