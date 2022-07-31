@@ -1,15 +1,18 @@
 from http import HTTPStatus
 
-from django.contrib.auth.models import User
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from django.contrib.auth import get_user_model
+from rest_framework.decorators import ( api_view,
+                                        authentication_classes,
+                                        permission_classes)
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 
-
 from api.v2.forms import RegistroForm
+from api.core.models import Profile
 
+User = get_user_model()
 
 @api_view(['POST'])
 def registrar(request):
@@ -19,23 +22,32 @@ def registrar(request):
     if not form.is_valid():
         return Response({'error': form.errors}, status=HTTPStatus.BAD_REQUEST)
 
-    username = form.cleaned_data['username']
     email = form.cleaned_data['email']
     password = form.cleaned_data['password1']
 
-    if User.objects.filter(username=username).exists():
-        return Response({'error': {'username': f'User {username} already exists'}}, status=HTTPStatus.BAD_REQUEST)
+    name = form.cleaned_data['name']
+    phone = form.cleaned_data['phone']
+    institution = form.cleaned_data['institution']
+    role = form.cleaned_data['role']
 
-    usuario = User.objects.create_user(username, email=email, password=password)
 
-    if usuario:
-        Token.objects.create(user=usuario)
+    if User.objects.filter(email=email).exists():
+        return Response({'error': {'username': f'User {email} already exists'}}, status=HTTPStatus.BAD_REQUEST)
+
+    user = User.objects.create_user(email=email, password=password)
+    Profile.objects.create(user=user, name=name, phone=phone, institution=institution, role=role)
+
+    if user:
+        Token.objects.create(user=user)
 
     data = {
-        'id': usuario.id,
-        'username': usuario.username,
-        'email': usuario.email,
-        'token': usuario.auth_token.key
+        'id': user.id,
+        'email': user.email,
+        'token': user.auth_token.key,
+        'name' : user.profile.name,
+        'phone' : user.profile.phone,
+        'institution' : user.profile.institution,
+        'role' : user.profile.role,
     }
 
     return Response(data, status=HTTPStatus.CREATED)

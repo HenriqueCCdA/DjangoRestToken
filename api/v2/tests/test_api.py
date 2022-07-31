@@ -1,10 +1,14 @@
 from http import HTTPStatus
 
-from django.contrib.auth.models import User
 import pytest
+
+from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from django.shortcuts import resolve_url
+
+
+User = get_user_model()
 
 client = APIClient
 
@@ -18,34 +22,55 @@ HTTP_METHODS = {
     'delete': client().delete
 }
 
-
-def test_register_successfull(client, db):
-
-    payload = dict(
-        username='test1',
+@pytest.fixture
+def payload():
+    return dict(
         email='test1@email.com',
         password1='123456!!',
-        password2='123456!!'
+        password2='123456!!',
+        name='test1',
+        phone='1111111',
+        institution='UFRJ',
+        role='Medico'
     )
+
+
+def test_register_successfull(client, payload, db):
+
+    resp = client.post(resolve_url('v2:registrar'), data=payload, content_type=CONTENT_TYPE)
+
+    body = resp.json()
+    assert resp.status_code == HTTPStatus.CREATED
+    payload.pop('password1')
+    payload.pop('password2')
+    for k in payload:
+        assert body[k] == payload[k]
+    assert 'token' in body
+
+
+@pytest.mark.parametrize('field, error', [
+    ('email', ['This field is required.']),
+    ('name', ['This field is required.']),
+    ('phone', ['This field is required.']),
+    ('institution', ['This field is required.']),
+    ('role', ['This field is required.'])
+    ]
+)
+def test_resgiter_missing_fields(field, error, client, payload, db):
+
+    payload.pop(field)
 
     resp = client.post(resolve_url('v2:registrar'), data=payload, content_type=CONTENT_TYPE)
 
     body = resp.json()
 
-    assert resp.status_code == HTTPStatus.CREATED
-    assert body['username'] == payload['username']
-    assert body['email'] == payload['email']
-    assert 'token' in body
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
+    assert body['error'] == {field: error}
 
 
-def test_register_wrong_email(client, db):
+def test_register_invalid_email(client, payload, db):
 
-    payload = dict(
-        username='test1',
-        email='test1',
-        password1='123456!!',
-        password2='123456!!'
-    )
+    payload['email'] = 'test.com'
 
     resp = client.post(resolve_url('v2:registrar'), data=payload, content_type=CONTENT_TYPE)
 
@@ -55,15 +80,9 @@ def test_register_wrong_email(client, db):
     assert body['error'] == {'email': ['Enter a valid email address.']}
 
 
-def test_register_wrong_password_dont_mach(client, db):
+def test_register_password_dont_mach(client, payload, db):
 
-    payload = dict(
-        username='test1',
-        email='test1@email.com',
-        password1='123456!!',
-        password2='123455!!'
-    )
-
+    payload['password2'] = payload['password1'] + '1'
     resp = client.post(resolve_url('v2:registrar'), data=payload, content_type=CONTENT_TYPE)
 
     body = resp.json()
@@ -89,9 +108,7 @@ def test_view_protegida_without_token(client):
 
 def test_view_protegida_with_token(client, db):
 
-    user = User.objects.create_user(username='test1',
-                                    email='test1@email.com',
-                                    password='123456!!')
+    user = User.objects.create_user(email='test1@email.com', password='123456!!')
     token = Token.objects.create(user=user)
 
     header = {'HTTP_AUTHORIZATION': f'Token {token}'}
@@ -106,9 +123,7 @@ def test_view_protegida_with_token(client, db):
 @pytest.mark.parametrize("method", ['post', 'put', 'patch', 'delete'])
 def test_view_protegida_not_allowed_method(client, method, db):
 
-    user = User.objects.create_user(username='test1',
-                                    email='test1@email.com',
-                                    password='123456!!')
+    user = User.objects.create_user(email='test1@email.com', password='123456!!')
     token = Token.objects.create(user=user)
 
     header = {'HTTP_AUTHORIZATION': f'Token {token}'}
