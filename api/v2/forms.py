@@ -1,11 +1,16 @@
 from django import forms
+from django.contrib.auth import password_validation
 
 
 class RegistroForm(forms.Form):
 
     email = forms.EmailField(label='User email')
-    password1 = forms.CharField(max_length=50, widget=forms.PasswordInput)
-    password2 = forms.CharField(max_length=50, widget=forms.PasswordInput)
+    password1 = forms.CharField(label='password',
+                                widget=forms.PasswordInput,
+                                help_text=password_validation.password_validators_help_text_html())
+    password2 = forms.CharField(label='password confirmation',
+                                max_length=50,
+                                widget=forms.PasswordInput)
 
     name = forms.CharField(label='name', max_length=150)
     phone = forms.CharField(label='phone', max_length=30)
@@ -23,3 +28,11 @@ class RegistroForm(forms.Form):
             )
 
         return password2
+
+    def clean(self):
+        password = self.cleaned_data.get('password1')
+        if password:
+            try:
+                password_validation.validate_password(password, None)
+            except forms.ValidationError as error:
+                self.add_error('password1', error)

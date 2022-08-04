@@ -32,7 +32,7 @@ def registrar(request):
 
 
     if User.objects.filter(email=email).exists():
-        return Response({'error': {'username': f'User {email} already exists'}}, status=HTTPStatus.BAD_REQUEST)
+        return Response({'error': {'email': [f'This email already register']} }, status=HTTPStatus.BAD_REQUEST)
 
     user = User.objects.create_user(email=email, password=password)
     Profile.objects.create(user=user, name=name, phone=phone, institution=institution, role=role)
