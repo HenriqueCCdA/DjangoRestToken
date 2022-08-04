@@ -30,7 +30,6 @@ def registrar(request):
     institution = form.cleaned_data['institution']
     role = form.cleaned_data['role']
 
-
     if User.objects.filter(email=email).exists():
         return Response({'error': {'email': [f'This email already register']} }, status=HTTPStatus.BAD_REQUEST)
 
@@ -40,15 +39,7 @@ def registrar(request):
     if user:
         Token.objects.create(user=user)
 
-    data = {
-        'id': user.id,
-        'email': user.email,
-        'token': user.auth_token.key,
-        'name' : user.profile.name,
-        'phone' : user.profile.phone,
-        'institution' : user.profile.institution,
-        'role' : user.profile.role,
-    }
+    data = _userToDict(user)
 
     return Response(data, status=HTTPStatus.CREATED)
 
@@ -59,3 +50,15 @@ def registrar(request):
 def view_protegida(request):
     user = request.user
     return Response({'data': f'Good news, {user} user have a valid token !!'})
+
+
+def _userToDict(user):
+    return {
+        'id': user.id,
+        'email': user.email,
+        'token': user.auth_token.key,
+        'name' : user.profile.name,
+        'phone' : user.profile.phone,
+        'institution' : user.profile.institution,
+        'role' : user.profile.role,
+    }

@@ -9,13 +9,22 @@ class RegistroForm(forms.Form):
                                 widget=forms.PasswordInput,
                                 help_text=password_validation.password_validators_help_text_html())
     password2 = forms.CharField(label='password confirmation',
-                                max_length=50,
                                 widget=forms.PasswordInput)
 
     name = forms.CharField(label='name', max_length=150)
     phone = forms.CharField(label='phone', max_length=30)
     institution = forms.CharField(label='institution', max_length=30)
     role = forms.CharField(label='role', max_length=30)
+
+
+    def clean_name(self):
+        return self.cleaned_data.get('name').lower()
+
+    def clean_institution(self):
+        return self.cleaned_data.get('institution').lower()
+
+    def clean_role(self):
+        return self.cleaned_data.get('role').lower()
 
     def clean_password2(self):
         password1 = self.cleaned_data.get('password1')
