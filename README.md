@@ -1,6 +1,6 @@
 # API-DRF
 
-Uma API simples para o cadastro de usuario em um banco de dados. Os campos requiridos para o cadastro são:
+Uma API simples para o cadastro de usuario em um banco de dados. Os campos requeridos para o cadastro são:
 
 * email (username)
 * password
@@ -153,4 +153,10 @@ pip-sync requirements.txt requirements-dev.txt
 
 ```console
 pytest -vv
+```
+
+## 4.6) Subindo o servidor local
+
+```
+python manage.py runserver
 ```
