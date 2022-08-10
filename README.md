@@ -123,6 +123,21 @@ curl --request GET \
 ## 4) Configurando o projeto
 ---
 
+Instalação inicial, necessário fazer apenas uma vez.
+
+```console
+python -m venv .venv --upgrade-deps
+source .venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+```
+
+Rodando o servidor
+
+```console
+python manage.py runserver
+```
+
 ### 4.1) Criando virtualenv ambiente de produção
 
 ```console
@@ -155,8 +170,14 @@ pip-sync requirements.txt requirements-dev.txt
 pytest -vv
 ```
 
-## 4.6) Subindo o servidor local
+## 4.6) Inicializando o banco de dados
 
+```console
+python manage.py migrate
 ```
+
+## 4.7) Subindo o servidor local
+
+```console
 python manage.py runserver
 ```
