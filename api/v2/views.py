@@ -20,7 +20,7 @@ def registrar(request):
     form = RegistroForm(request.data)
 
     if not form.is_valid():
-        return Response({'error': form.errors}, status=HTTPStatus.BAD_REQUEST)
+        return Response({'errors': form.errors}, status=HTTPStatus.BAD_REQUEST)
 
     email = form.cleaned_data['email']
     password = form.cleaned_data['password1']
@@ -31,7 +31,7 @@ def registrar(request):
     role = form.cleaned_data['role']
 
     if User.objects.filter(email=email).exists():
-        return Response({'error': {'email': [f'This email already register']} }, status=HTTPStatus.BAD_REQUEST)
+        return Response({'errors': {'email': [f'This email already register']} }, status=HTTPStatus.BAD_REQUEST)
 
     user = User.objects.create_user(email=email, password=password)
     Profile.objects.create(user=user, name=name, phone=phone, institution=institution, role=role)
