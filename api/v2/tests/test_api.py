@@ -69,7 +69,7 @@ def test_resgiter_missing_fields(field, error, client, payload, db):
     body = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert body['errors'] == {field: error}
+    assert body['errors'] == [{field: error}]
 
 
 def test_register_invalid_email(client, payload, db):
@@ -81,7 +81,7 @@ def test_register_invalid_email(client, payload, db):
     body = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert body['errors'] == {'email': ['Enter a valid email address.']}
+    assert body['errors'] == [{'email': ['Enter a valid email address.']}]
 
 
 def test_register_password_dont_mach(client, payload, db):
@@ -92,7 +92,7 @@ def test_register_password_dont_mach(client, payload, db):
     body = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert body['errors'] == {'password2': ['The two password fields didn’t match.']}
+    assert body['errors'] == [{'password2': ['The two password fields didn’t match.']}]
 
 
 @pytest.mark.parametrize("method", ['get', 'put', 'patch', 'delete'])
