@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 
 from api.v2.forms import RegistroForm
 from api.core.models import Profile
@@ -50,6 +51,31 @@ def registrar(request):
 def view_protegida(request):
     user = request.user
     return Response({'data': f'Good news, {user} user have a valid token !!'})
+
+
+
+class MyObtainAuthToken(ObtainAuthToken):
+    '''
+    Error response example
+    {
+    "errors": [
+        {
+            "username": ["This field is required."]
+        },
+        {
+            "password": ["This field is required."]
+        }
+    ]
+    }
+    '''
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid(raise_exception=False):
+            return Response({'errors': _list_errors(serializer.errors)}, status=HTTPStatus.BAD_REQUEST)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'id': user.id, 'token': token.key})
+
 
 
 def _userToDict(user):

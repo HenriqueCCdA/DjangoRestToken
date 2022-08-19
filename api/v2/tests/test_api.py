@@ -1,4 +1,6 @@
+from distutils.log import info
 from http import HTTPStatus
+from re import I
 
 import pytest
 
@@ -136,3 +138,90 @@ def test_view_protegida_not_allowed_method(client, method, db):
                                 content_type=CONTENT_TYPE,
                                 **header)
     assert resp.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+
+def test_successful_login(client, db):
+
+    info_login = {'username': 'test1@email.com', 'password': '123456!!'}
+
+    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+
+    resp = client.post(resolve_url('v2:login'), data=info_login, content_type=CONTENT_TYPE)
+    response_dict = resp.json()
+
+    assert resp.status_code == HTTPStatus.OK
+    assert response_dict == {'id': 1, 'token': Token.objects.get(user=user).key}
+
+
+def test_fail_login_wrong_username(client, db):
+
+    info_login = {'username': 'test1@email.com', 'password': '123456!!'}
+
+    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+
+    wrong_login = info_login.copy()
+    wrong_login['username'] = wrong_login['username'] + 'o'
+    resp = client.post(resolve_url('v2:login'), data=wrong_login, content_type=CONTENT_TYPE)
+    response_dict = resp.json()
+
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
+    assert response_dict == {'errors': [{'non_field_errors': ['Unable to log in with provided credentials.']}]}
+
+
+def test_fail_login_wrong_password(client, db):
+
+    info_login = {'username': 'test1@email.com', 'password': '123456!!'}
+
+    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+
+    wrong_login = info_login.copy()
+    wrong_login['password'] = wrong_login['password'] + 'o'
+    resp = client.post(resolve_url('v2:login'), data=wrong_login, content_type=CONTENT_TYPE)
+    response_dict = resp.json()
+
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
+    assert response_dict == {'errors': [{'non_field_errors': ['Unable to log in with provided credentials.']}]}
+
+
+def test_fail_login_missing_password(client, db):
+
+    info_login = {'username': 'test1@email.com', 'password': '123456!!'}
+
+    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+
+    wrong_login = info_login.copy()
+    wrong_login.pop('password')
+    resp = client.post(resolve_url('v2:login'), data=wrong_login, content_type=CONTENT_TYPE)
+    response_dict = resp.json()
+
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
+    assert response_dict == {'errors': [{'password': ['This field is required.']}]}
+
+
+def test_fail_login_missing_username(client, db):
+
+    info_login = {'username': 'test1@email.com', 'password': '123456!!'}
+
+    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+
+    wrong_login = info_login.copy()
+    wrong_login.pop('username')
+    resp = client.post(resolve_url('v2:login'), data=wrong_login, content_type=CONTENT_TYPE)
+    response_dict = resp.json()
+
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
+    assert response_dict == {'errors': [{'username': ['This field is required.']}]}
+
+
+def test_fail_login_missing_username_and_password(client, db):
+
+    info_login = {'username': 'test1@email.com', 'password': '123456!!'}
+
+    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+
+    wrong_login = {}
+    resp = client.post(resolve_url('v2:login'), data=wrong_login, content_type=CONTENT_TYPE)
+    response_dict = resp.json()
+
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
+    assert response_dict == {'errors': [{'username': ['This field is required.']}, {'password': ['This field is required.']}]}

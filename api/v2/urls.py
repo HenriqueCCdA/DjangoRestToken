@@ -1,12 +1,12 @@
 from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 
-from api.v2.views import view_protegida, registrar
+from api.v2.views import MyObtainAuthToken, view_protegida, registrar
 
 
 app_name = 'v2'
 urlpatterns = [
     path('registrar/', registrar, name='registrar'),
-    path('login/', obtain_auth_token, name='api-token-auth'),
+    path('login/', MyObtainAuthToken.as_view(), name='login'),
     path('view_protegida/', view_protegida, name='view_protegida'),
 ]
