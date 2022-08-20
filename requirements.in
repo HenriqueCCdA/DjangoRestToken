@@ -1,2 +1,7 @@
 djangorestframework
 django-cors-headers
+python-decouple
+django
+dj-database-url
+psycopg2
+gunicorn
