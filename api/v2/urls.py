@@ -1,5 +1,4 @@
 from django.urls import path
-from rest_framework.authtoken.views import obtain_auth_token
 
 from api.v2.views import MyObtainAuthToken, view_protegida, registrar
 

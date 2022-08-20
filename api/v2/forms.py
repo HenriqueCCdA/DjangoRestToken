@@ -16,7 +16,6 @@ class RegistroForm(forms.Form):
     institution = forms.CharField(label='institution', max_length=30)
     role = forms.CharField(label='role', max_length=30)
 
-
     def clean_name(self):
         return self.cleaned_data.get('name').lower()
 

@@ -1,6 +1,4 @@
-from distutils.log import info
 from http import HTTPStatus
-from re import I
 
 import pytest
 
@@ -23,6 +21,7 @@ HTTP_METHODS = {
     'patch': client().patch,
     'delete': client().delete
 }
+
 
 @pytest.fixture
 def payload():
@@ -47,7 +46,6 @@ def test_register_successfull(client, payload, db):
     payload.pop('password2')
     payload['institution'] = payload['institution'].lower()
     payload['role'] = payload['role'].lower()
-
 
     for k in payload:
         assert body[k] == payload[k]
@@ -150,14 +148,14 @@ def test_successful_login(client, db):
     response_dict = resp.json()
 
     assert resp.status_code == HTTPStatus.OK
-    assert response_dict == {'id': 1, 'token': Token.objects.get(user=user).key}
+    assert response_dict == {'id': user.id, 'token': Token.objects.get(user=user).key}
 
 
 def test_fail_login_wrong_username(client, db):
 
     info_login = {'username': 'test1@email.com', 'password': '123456!!'}
 
-    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+    _ = User.objects.create_user(email=info_login['username'], password=info_login['password'])
 
     wrong_login = info_login.copy()
     wrong_login['username'] = wrong_login['username'] + 'o'
@@ -172,7 +170,7 @@ def test_fail_login_wrong_password(client, db):
 
     info_login = {'username': 'test1@email.com', 'password': '123456!!'}
 
-    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+    _ = User.objects.create_user(email=info_login['username'], password=info_login['password'])
 
     wrong_login = info_login.copy()
     wrong_login['password'] = wrong_login['password'] + 'o'
@@ -187,7 +185,7 @@ def test_fail_login_missing_password(client, db):
 
     info_login = {'username': 'test1@email.com', 'password': '123456!!'}
 
-    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+    _ = User.objects.create_user(email=info_login['username'], password=info_login['password'])
 
     wrong_login = info_login.copy()
     wrong_login.pop('password')
@@ -202,7 +200,7 @@ def test_fail_login_missing_username(client, db):
 
     info_login = {'username': 'test1@email.com', 'password': '123456!!'}
 
-    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+    _ = User.objects.create_user(email=info_login['username'], password=info_login['password'])
 
     wrong_login = info_login.copy()
     wrong_login.pop('username')
@@ -217,11 +215,12 @@ def test_fail_login_missing_username_and_password(client, db):
 
     info_login = {'username': 'test1@email.com', 'password': '123456!!'}
 
-    user = User.objects.create_user(email=info_login['username'], password=info_login['password'])
+    _ = User.objects.create_user(email=info_login['username'], password=info_login['password'])
 
     wrong_login = {}
     resp = client.post(resolve_url('v2:login'), data=wrong_login, content_type=CONTENT_TYPE)
     response_dict = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert response_dict == {'errors': [{'username': ['This field is required.']}, {'password': ['This field is required.']}]}
+    assert response_dict == {'errors': [{'username': ['This field is required.']},
+                                        {'password': ['This field is required.']}]}
