@@ -1,9 +1,11 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
-from rest_framework.decorators import ( api_view,
+from rest_framework.decorators import (
+                                        api_view,
                                         authentication_classes,
-                                        permission_classes)
+                                        permission_classes
+                                        )
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -14,6 +16,7 @@ from api.v2.forms import RegistroForm
 from api.core.models import Profile
 
 User = get_user_model()
+
 
 @api_view(['POST'])
 def registrar(request):
@@ -32,7 +35,7 @@ def registrar(request):
     role = form.cleaned_data['role']
 
     if User.objects.filter(email=email).exists():
-        return Response({'errors': [{'email': [f'This email already register']}]}, status=HTTPStatus.BAD_REQUEST)
+        return Response({'errors': [{'email': ['This email already register']}]}, status=HTTPStatus.BAD_REQUEST)
 
     user = User.objects.create_user(email=email, password=password)
     Profile.objects.create(user=user, name=name, phone=phone, institution=institution, role=role)
@@ -51,7 +54,6 @@ def registrar(request):
 def view_protegida(request):
     user = request.user
     return Response({'data': f'Good news, {user} user have a valid token !!'})
-
 
 
 class MyObtainAuthToken(ObtainAuthToken):
@@ -77,17 +79,17 @@ class MyObtainAuthToken(ObtainAuthToken):
         return Response({'id': user.id, 'token': token.key})
 
 
-
 def _userToDict(user):
     return {
         'id': user.id,
         'email': user.email,
         'token': user.auth_token.key,
-        'name' : user.profile.name,
-        'phone' : user.profile.phone,
-        'institution' : user.profile.institution,
-        'role' : user.profile.role,
+        'name': user.profile.name,
+        'phone': user.profile.phone,
+        'institution': user.profile.institution,
+        'role': user.profile.role,
     }
 
+
 def _list_errors(errors):
-    return [ {k: v} for k, v in errors.items()]
+    return [{k: v} for k, v in errors.items()]
