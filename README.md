@@ -181,3 +181,17 @@ python manage.py migrate
 ```console
 python manage.py runserver
 ```
+
+## 4.8) Usando o postgres via docker:
+
+Subir o container
+
+```consolse
+docker-compose -f docker-compose.yml up -d
+```
+
+Configurar `DATABASE_URL` no arquivo `.env` para
+
+```
+postgres://api:apirest@localhost:5434/api
+```
