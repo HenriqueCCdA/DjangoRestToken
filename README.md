@@ -17,18 +17,18 @@ Neste projeto foi usa do **Django Rest Framework (DFR)** como framework web para
 
 # Index
 
-  - [1) Rotas](#-1-rotas)
-    - [1.1)Rota de cadastro](#-11rota-de-cadastro)
-    - [1.2) Rota de login](#-12-rota-de-login)
-    - [1.3) Rota para um recurso protegido](#-13-rota-para-um-recurso-protegido)
-  - [2) Subindo o servidor](#-2-subindo-o-servidor)
-    - [2.1) setup inicial](#-21-setup-inicial)
-    - [2.2) Rodando o servido](#-22-rodando-o-servido)
-  - [3) Desenvolvimento](#-3-desenvolvimento)
-    - [3.1) Instalando dependencias de desenvolvimento](#-31-instalando-dependencias-de-desenvolvimento)
-    - [3.2) Rodando os teste](#-32-rodando-os-teste)
-  - [4) Banco de dados](#-4-banco-de-dados)
-    - [4.1) Usando o postgres via docker:](#-41-usando-o-postgres-via-docker)
+  - [1) Rotas](#1-rotas)
+    - [1.1) Rota de cadastro](#11-rota-de-cadastro)
+    - [1.2) Rota de login](#12-rota-de-login)
+    - [1.3) Rota para um recurso protegido](#13-rota-para-um-recurso-protegido)
+  - [2) Subindo o servidor](#2-subindo-o-servidor)
+    - [2.1) setup inicial](#21-setup-inicial)
+    - [2.2) Rodando o servido](#22-rodando-o-servido)
+  - [3) Desenvolvimento](#3-desenvolvimento)
+    - [3.1) Instalando dependencias de desenvolvimento](#31-instalando-dependencias-de-desenvolvimento)
+    - [3.2) Rodando os teste](#32-rodando-os-teste)
+  - [4) Banco de dados](#4-banco-de-dados)
+    - [4.1) Usando o postgres via docker:](#41-usando-o-postgres-via-docker)
 
 ---
 
@@ -227,7 +227,7 @@ pytest -vv
 
 ---
 
-### 4.1) Usando o postgres via docker:
+### 4.1) Usando o postgres via docker
 
 ---
 
