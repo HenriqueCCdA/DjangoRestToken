@@ -168,7 +168,7 @@ Para usar o `sqlite` o arquivo `.env` fica assim:
 DEBUG=false
 SECRET_KEY=Sua chave secreta
 ALLOWED_HOSTS=localhost, 127.0.0.1
-CORS_ALLOWED_ORIGINS=127.0.0.1:8000
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 ```
 
 Para usar o `postgres` o arquivo `.env` fica assim:
@@ -177,7 +177,7 @@ Para usar o `postgres` o arquivo `.env` fica assim:
 DEBUG=false
 SECRET_KEY=Sua chave secreta
 ALLOWED_HOSTS=localhost, 127.0.0.1
-CORS_ALLOWED_ORIGINS=127.0.0.1:8000
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 DATABASE_URL=postgres://seu_user_db:seu_password_db@localhost:5432/seu_db
 ```
 
