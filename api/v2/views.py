@@ -35,7 +35,7 @@ def registrar(request):
     role = form.cleaned_data['role']
 
     if User.objects.filter(email=email).exists():
-        return Response({'errors': [{'email': ['This email already register']}]}, status=HTTPStatus.BAD_REQUEST)
+        return Response({'errors': ['This email already register']}, status=HTTPStatus.BAD_REQUEST)
 
     user = User.objects.create_user(email=email, password=password)
     Profile.objects.create(user=user, name=name, phone=phone, institution=institution, role=role)
