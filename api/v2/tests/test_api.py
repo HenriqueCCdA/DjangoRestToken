@@ -52,6 +52,10 @@ def test_register_successfull(client, payload, db):
     assert 'token' in body
 
 
+# def test_email_already_register():
+    ...
+
+
 @pytest.mark.parametrize('field, error', [
     ('email', ['Email field is required.']),
     ('name', ['Name field is required.']),
