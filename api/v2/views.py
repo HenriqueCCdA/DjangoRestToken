@@ -92,4 +92,14 @@ def _userToDict(user):
 
 
 def _list_errors(errors):
-    return [{k: v} for k, v in errors.items()]
+
+    list_ = []
+
+    for field_name, field_errors in errors.items():
+        for error in field_errors:
+            if error == 'This field is required.':
+                msg = field_name.capitalize() + ' field is required.'
+                list_.append(msg)
+            else:
+                list_.append(error)
+    return list_

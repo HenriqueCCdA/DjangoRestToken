@@ -17,6 +17,9 @@ class RegistroForm(forms.Form):
     role = forms.CharField(label='role', max_length=30)
 
     def clean_name(self):
+        if not self.cleaned_data.get('name'):
+            self.add_error('name', 'Name field is required')
+
         return self.cleaned_data.get('name').lower()
 
     def clean_institution(self):

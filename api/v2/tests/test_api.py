@@ -53,11 +53,11 @@ def test_register_successfull(client, payload, db):
 
 
 @pytest.mark.parametrize('field, error', [
-    ('email', ['This field is required.']),
-    ('name', ['This field is required.']),
-    ('phone', ['This field is required.']),
-    ('institution', ['This field is required.']),
-    ('role', ['This field is required.'])
+    ('email', ['Email field is required.']),
+    ('name', ['Name field is required.']),
+    ('phone', ['Phone field is required.']),
+    ('institution', ['Institution field is required.']),
+    ('role', ['Role field is required.'])
     ]
 )
 def test_resgiter_missing_fields(field, error, client, payload, db):
@@ -69,7 +69,7 @@ def test_resgiter_missing_fields(field, error, client, payload, db):
     body = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert body['errors'] == [{field: error}]
+    assert body['errors'] == error
 
 
 def test_register_invalid_email(client, payload, db):
@@ -81,7 +81,7 @@ def test_register_invalid_email(client, payload, db):
     body = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert body['errors'] == [{'email': ['Enter a valid email address.']}]
+    assert body['errors'] == ['Enter a valid email address.']
 
 
 def test_register_password_dont_mach(client, payload, db):
@@ -92,7 +92,7 @@ def test_register_password_dont_mach(client, payload, db):
     body = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert body['errors'] == [{'password2': ['The two password fields didn’t match.']}]
+    assert body['errors'] == ['The two password fields didn’t match.']
 
 
 @pytest.mark.parametrize("method", ['get', 'put', 'patch', 'delete'])
@@ -163,7 +163,7 @@ def test_fail_login_wrong_username(client, db):
     response_dict = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert response_dict == {'errors': [{'non_field_errors': ['Unable to log in with provided credentials.']}]}
+    assert response_dict == {'errors': ['Unable to log in with provided credentials.']}
 
 
 def test_fail_login_wrong_password(client, db):
@@ -178,7 +178,7 @@ def test_fail_login_wrong_password(client, db):
     response_dict = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert response_dict == {'errors': [{'non_field_errors': ['Unable to log in with provided credentials.']}]}
+    assert response_dict == {'errors': ['Unable to log in with provided credentials.']}
 
 
 def test_fail_login_missing_password(client, db):
@@ -193,7 +193,7 @@ def test_fail_login_missing_password(client, db):
     response_dict = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert response_dict == {'errors': [{'password': ['This field is required.']}]}
+    assert response_dict == {'errors': ['Password field is required.']}
 
 
 def test_fail_login_missing_username(client, db):
@@ -208,7 +208,7 @@ def test_fail_login_missing_username(client, db):
     response_dict = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert response_dict == {'errors': [{'username': ['This field is required.']}]}
+    assert response_dict == {'errors': ['Username field is required.']}
 
 
 def test_fail_login_missing_username_and_password(client, db):
@@ -222,5 +222,4 @@ def test_fail_login_missing_username_and_password(client, db):
     response_dict = resp.json()
 
     assert resp.status_code == HTTPStatus.BAD_REQUEST
-    assert response_dict == {'errors': [{'username': ['This field is required.']},
-                                        {'password': ['This field is required.']}]}
+    assert response_dict == {'errors': ['Username field is required.', 'Password field is required.']}
